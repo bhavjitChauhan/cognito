@@ -1,4 +1,6 @@
 # cognito
+[![Run on Repl.it](https://repl.it/badge/github/bhavjitChauhan/cognito)](https://repl.it/github/bhavjitChauhan/cognito)
+
 Search engine that queries results from academic databases.
 
 ## Installation
