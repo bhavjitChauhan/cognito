@@ -1,0 +1,21 @@
+{
+  "name": "cognito",
+  "version": "1.0.0",
+  "description": "Search engine that queries results from academic databases.",
+  "main": "index.js",
+  "scripts": {
+    "test": "standard"
+  },
+  "author": "Bhavjit Chauhan",
+  "license": "MIT",
+  "dependencies": {
+    "bootstrap": "^4.4.1",
+    "jquery": "^3.4.1",
+    "tether": "^1.4.7"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.26.7",
+    "gulp": "^4.0.2",
+    "gulp-sass": "^4.0.2"
+  }
+}
