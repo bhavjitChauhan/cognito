@@ -1,66 +1,101 @@
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+})
+
 const searchBox = document.querySelector('#search');
 
-searchBox.addEventListener("keyup", function(event) {
-  // Number 13 is the "Enter" key on the keyboard
-  if (event.keyCode === 13) {
-    // Cancel the default action, if needed
-    event.preventDefault();
-    // Trigger the button element with a click
-    search(event);
-  }
+searchBox.addEventListener('keyup', function (event) {
+    // Check if key code is 13, the Enter key
+    if (event.keyCode === 13) {
+        // Cancel the default action, if needed
+        event.preventDefault();
+        // Trigger the button element with a click
+        search(event);
+    }
 });
 
 function search(event) {
+    // Store the input value
     const input = document.querySelector('#search').value;
+    // Remove leading and trailing spaces
     const query = input.trim();
 
-    $("#results").empty();
+    // Clear any previous results
+    $('#results').empty();
 
-    let loadingContainer = document.createElement("div");
-    loadingContainer.classList.add("container");
-    loadingContainer.classList.add("text-center");
-    $(loadingContainer).attr("id","loading");
+    // Create a div for the loading animation
+    let loadingContainer = document.createElement('div');
+    loadingContainer.classList.add('container');
+    loadingContainer.classList.add('text-center');
+    $(loadingContainer).attr('id', 'loading');
 
-    let loading = document.createElement("div");
-    loading.classList.add("spinner-grow");
-    loading.classList.add("text-dark");
-    loading.role = "status";
-    let loadingText = document.createElement("span");
-    loadingText.classList.add("sr-only");
-    loadingText.appendChild(document.createTextNode("Loading..."));
+    let loading = document.createElement('div');
+    loading.classList.add('spinner-grow');
+    loading.classList.add('text-dark');
+    loading.role = 'status';
+    let loadingText = document.createElement('span');
+    loadingText.classList.add('sr-only');
+    loadingText.appendChild(document.createTextNode('Loading...'));
     loading.appendChild(loadingText);
     loadingContainer.appendChild(loading);
 
-    document.getElementById("results").appendChild(loadingContainer);
+    document.getElementById('results').appendChild(loadingContainer);
 
+    // Get Wikipedia results
     fetchWikipedia(query);
 };
 
 function fetchWikipedia(query) {
-    var url = "https://en.wikipedia.org/w/api.php"; 
+    // Base endpoint
+    var url = 'https://en.wikipedia.org/w/api.php';
+    // A cleaner method of passing parameters
     var params = {
-        action: "query",
-        format: "json",
-        prop: "pageimages%7Cpageterms&",
-        generator: "prefixsearch",
+        action: 'query',
+        format: 'json',
+        prop: 'pageimages%7Cpageterms&',
+        generator: 'prefixsearch',
         redirects: 1,
-        piprop: "thumbnail",
+        piprop: 'thumbnail',
         pithumbsize: 250,
         pilimit: 20,
-        wbptterms: "description",
+        wbptterms: 'description',
         gpssearch: query
     };
+    // Append parameters to the end of the URL
+    url = url + '?origin=*';
+    Object.keys(params).forEach(function (key) { url += '&' + key + '=' + params[key]; });
 
-    url = url + "?origin=*";
-    Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
-
+    // Make the API GET request
     $.get(url, data => {
+        // Log results to console for debugging purposes
         console.log(data);
-        if(Object.values(data.query.pages).length !== 0) {
+        // Make sure results array isn't empty
+        if (Object.values(data.query.pages).length !== 0) {
+            // Get the first page in the results
             let page = Object.values(data.query.pages)[0];
             let title = page.title;
             let description = page.terms.description[0];
+            // Capitalize the first word of the sentence
             description = description.charAt(0).toUpperCase() + description.slice(1);
+
+            let entry = $('<div>', {
+                'class': 'media'
+            });
+            if (page['thumbnail']) {
+                let image = page.thumbnail.source;
+                $('<img>', {
+                    'class': 'align-self-start mr-3',
+                    src: image
+                }).appendTo(entry);
+            }
+            let entryBody = $('<div>', {
+                'class': 'media-body'
+            });
+            $('<h5>', {
+                'class': 'mt-0',
+                text: title
+            }).appendTo(entryBody);
+            $(entryBody).append(description);
             let readmore = $('<p>');
             $('<a>', {
                 html: 'Read more <i class="fas fa-external-link-alt"></i>',
@@ -69,43 +104,25 @@ function fetchWikipedia(query) {
                 target: '_blank'
             }).appendTo(readmore);
 
-
-            let entry = document.createElement("div");
-            entry.classList.add("media");
-            if (page["thumbnail"]) {
-                let image = page.thumbnail.source;
-                let icon = document.createElement("img");
-                icon.classList.add("align-self-start");
-                icon.classList.add("mr-3");
-                icon.src = image;
-                entry.append(icon);
-            }            
-            let entryBody = document.createElement("div");
-            entryBody.classList.add("media-body");
-            let heading = document.createElement("h5");
-            heading.classList.add("mt-0");
-            heading.append(document.createTextNode(title));
-            $(entryBody).append(heading);
-            $(entryBody).append(description);
             $(entryBody).append(readmore);
             entry.append(entryBody);
 
-            // <div class="media">
-            //     <img src="/assets/wikipedia.png" class="align-self-start mr-3" alt="...">
-            //     <div class="media-body">
-            //         <h5 class="mt-0">Top-aligned media</h5>
+            // <div class='media'>
+            //     <img src='/assets/wikipedia.png' class='align-self-start mr-3' alt='...'>
+            //     <div class='media-body'>
+            //         <h5 class='mt-0'>Top-aligned media</h5>
             //         <p>Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.</p>
             //     </div>
             // </div>
 
-            $("#results").append(entry);
+            $('#results').append(entry);
         }
     })
         // .then(() => {
-        //     $("#loading").remove();
+        //     $('#loading').remove();
         // })
         .fail(() => {
-            console.error("Wikipedia Failed");
+            console.error('Wikipedia Failed');
         })
-    
+
 }

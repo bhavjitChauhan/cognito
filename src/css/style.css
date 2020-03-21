@@ -3,6 +3,10 @@
     text-decoration: none;
 } */
 
+iframe {
+    border: none;
+}
+
 span .search-match {
     background-color: yellow;
 }
@@ -11,7 +15,10 @@ span .search-match {
     width: 50%;
     margin: 50px auto;
 }
-
+.card-horizontal {
+    display: flex;
+    flex: 1 1 auto;
+}
 #search-form .form-control {
     padding-left: 2.375rem;
 }
