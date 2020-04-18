@@ -1,7 +1,3 @@
-$(function () {
-    $('[data-toggle="tooltip"]').tooltip()
-})
-
 const searchBox = document.querySelector('#search');
 
 searchBox.addEventListener('keyup', function (event) {
